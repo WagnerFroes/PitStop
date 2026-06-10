@@ -1,15 +1,17 @@
 import React, { useState } from "react";
 import {
-    FlatList,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import ProgressCard from "../../components/ProgressCard";
 import StationCard from "../../components/StationCard";
 import { colors } from "../../constants/colors";
 import { mockStations } from "../../data/stations";
+import { mockUserProgress } from "../../data/userProgress";
 import { Station, StationService } from "../../types/station";
 
 type FilterOption = "all" | StationService;
@@ -56,6 +58,11 @@ export default function StationListScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Progress Card */}
+      <View style={styles.progressContainer}>
+        <ProgressCard data={mockUserProgress} />
+      </View>
+
       {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Postos Próximos</Text>
@@ -175,9 +182,14 @@ const styles = StyleSheet.create({
   filterTextActive: {
     color: colors.white,
   },
+  progressContainer: {
+    paddingHorizontal: 20,
+    paddingTop: 8,
+    paddingBottom: 4,
+  },
   listContent: {
     paddingHorizontal: 20,
-    paddingTop: 16,
+    paddingTop: 0,
     paddingBottom: 32,
   },
   emptyContainer: {
