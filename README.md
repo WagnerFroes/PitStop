@@ -1,50 +1,208 @@
-# Welcome to your Expo app 👋
+# PitStop
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+**PitStop** é um aplicativo mobile em desenvolvimento para iOS e Android, criado com **React Native**, **Expo** e **TypeScript**.
 
-## Get started
+A proposta do app é ajudar motoristas a encontrar postos de combustível, comparar preços, visualizar serviços disponíveis e contribuir com informações atualizadas de forma colaborativa.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## Visão geral
 
-2. Start the app
+O PitStop será uma plataforma colaborativa para consulta e atualização de informações sobre postos de gasolina, começando inicialmente pela cidade de **São Paulo/SP**.
 
-   ```bash
-   npx expo start
-   ```
+A ideia principal é permitir que usuários visualizem postos próximos, consultem preços de combustíveis, avaliem estabelecimentos e ganhem pontos por manterem as informações atualizadas.
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Funcionalidades planejadas
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+* Listagem de postos de combustível
+* Visualização de detalhes de cada posto
+* Exibição de preços de combustíveis
+* Atualização colaborativa dos valores
+* Avaliação dos postos pelos usuários
+* Informações sobre serviços disponíveis
+* Sistema de pontuação e níveis
+* Mapa com localização dos postos
+* Integração futura com API de mapas
+* Login e persistência de dados em backend futuramente
 
-## Get a fresh project
+---
 
-When you're ready, run:
+## Serviços que poderão ser informados
 
-```bash
-npm run reset-project
+Cada posto poderá conter informações como:
+
+* Conveniência
+* Gelo
+* Banheiro
+* Calibrador
+* Lava-rápido
+* Troca de óleo
+* Pagamento por Pix
+* Aceita cartão
+* Funcionamento 24h
+
+---
+
+## Combustíveis monitorados
+
+O aplicativo poderá exibir e atualizar preços de:
+
+* Gasolina comum
+* Gasolina aditivada
+* Etanol
+* Diesel S10
+* Diesel comum
+* GNV
+
+---
+
+## Gamificação
+
+Para incentivar a colaboração, o PitStop terá um sistema de progressão de nível.
+
+Exemplo de níveis:
+
+1. Motorista Iniciante
+2. Caçador de Preços
+3. Fiscal da Bomba
+4. Mestre do Litro
+5. Lenda do Abastecimento
+
+Usuários poderão ganhar pontos ao:
+
+* Atualizar preços de combustível
+* Confirmar preços corretos
+* Avaliar postos
+* Adicionar serviços disponíveis
+* Reportar informações incorretas
+* Contribuir com dados recentes
+
+---
+
+## Tecnologias utilizadas
+
+* React Native
+* Expo
+* TypeScript
+* Expo Go
+* Git
+* GitHub
+
+---
+
+## Tecnologias futuras
+
+Possíveis integrações futuras:
+
+* Google Maps Platform
+* Google Places API
+* Supabase
+* Firebase
+* Backend próprio
+* Banco de dados em nuvem
+
+---
+
+## Estrutura inicial do projeto
+
+```text
+PitStop/
+  app/
+  assets/
+  components/
+  constants/
+  hooks/
+  scripts/
+  package.json
+  README.md
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+A estrutura poderá evoluir para uma organização mais escalável conforme o projeto crescer.
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## Como rodar o projeto
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Clone o repositório:
 
-## Join the community
+```bash
+git clone https://github.com/WagnerFroes/PitStop.git
+```
 
-Join our community of developers creating universal apps.
+Entre na pasta do projeto:
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```bash
+cd PitStop
+```
+
+Instale as dependências:
+
+```bash
+npm install
+```
+
+Inicie o projeto:
+
+```bash
+npx expo start
+```
+
+Para limpar o cache:
+
+```bash
+npx expo start -c
+```
+
+Depois, abra o aplicativo **Expo Go** no celular e escaneie o QR Code exibido no terminal.
+
+---
+
+## Status do projeto
+
+O projeto está em fase inicial de desenvolvimento.
+
+Primeira etapa:
+
+* Configuração do ambiente
+* Criação do projeto Expo
+* Organização inicial
+* Versionamento com Git e GitHub
+
+Próximas etapas:
+
+* Criar tela inicial personalizada
+* Criar lista de postos mockados
+* Criar tela de detalhes do posto
+* Criar visualização de preços
+* Adicionar sistema de atualização de valores
+* Adicionar mapa e localização
+* Adicionar gamificação
+
+---
+
+## Objetivo do MVP
+
+O primeiro MVP terá foco em:
+
+* Rodar corretamente no Expo Go
+* Exibir uma lista inicial de postos mockados em São Paulo
+* Mostrar detalhes dos postos
+* Mostrar preços de combustíveis
+* Permitir atualização local dos preços
+* Criar a base visual do aplicativo
+
+---
+
+## Autor
+
+Desenvolvido por **Wagner Froes**.
+
+GitHub: [WagnerFroes](https://github.com/WagnerFroes)
+
+---
+
+## Licença
+
+Este projeto está em desenvolvimento para fins de estudo, prática e evolução profissional.
