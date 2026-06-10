@@ -1,11 +1,11 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import FuelPriceBadge from "../../src/components/FuelPriceBadge";
 import ServiceTag from "../../src/components/ServiceTag";
@@ -133,8 +133,13 @@ const StationDetailScreen = () => {
         </View>
       </View>
 
-      {/* Botão de Ação (Mock) */}
-      <TouchableOpacity style={styles.updateButton}>
+      {/* Botão de Atualizar Preço */}
+      <TouchableOpacity
+        style={styles.updateButton}
+        onPress={() =>
+          router.push(`/station/${station.id}/update-price` as any)
+        }
+      >
         <Text style={styles.updateButtonText}>Atualizar Preço</Text>
       </TouchableOpacity>
 
