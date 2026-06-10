@@ -1,8 +1,8 @@
+import { useRouter } from "expo-router";
 import React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { colors } from "../constants/colors";
-import { FuelType, Station } from "../types/station";
-import { formatCurrency } from "../utils/formatCurrency";
+import { Station } from "../types/station";
 import FuelPriceBadge from "./FuelPriceBadge";
 import ServiceTag from "./ServiceTag";
 
@@ -10,222 +10,196 @@ interface StationCardProps {
   station: Station;
 }
 
-export default function StationCard({ station }: StationCardProps) {
-  const mainFuelTypes: FuelType[] = ["gasolina_comum", "etanol"];
+const StationCard = ({ station }: StationCardProps) => {
+  const router = useRouter();
+
+  const handlePress = () => {
+    router.push(`/station/${station.id}` as any);
+  };
+  // Filtra os serviços para mostrar apenas até 4
+  const visibleServices = station.services.slice(0, 4);
 
   return (
-    <View style={styles.container}>
-      {/* Header */}
+    <TouchableOpacity
+      style={styles.container}
+      onPress={handlePress}
+      activeOpacity={0.7}
+    >
+      {/* Cabeçalho do Card: Marca e Nome */}
       <View style={styles.header}>
-        <View style={styles.nameRow}>
+        <View style={styles.brandContainer}>
           <Text style={styles.brand}>{station.brand}</Text>
-          {station.isOpen ? (
-            <View
-              style={[
-                styles.statusBadge,
-                { backgroundColor: colors.success + "20" },
-              ]}
-            >
-              <Text style={[styles.statusText, { color: colors.success }]}>
-                Aberto
-              </Text>
-            </View>
-          ) : (
-            <View
-              style={[
-                styles.statusBadge,
-                { backgroundColor: colors.danger + "20" },
-              ]}
-            >
-              <Text style={[styles.statusText, { color: colors.danger }]}>
-                Fechado
-              </Text>
-            </View>
-          )}
+          <Text style={styles.name}>{station.name}</Text>
         </View>
-        <Text style={styles.name}>{station.name}</Text>
-        <Text style={styles.address}>
-          {station.address}, {station.neighborhood}
+
+        {/* Status Aberto/Fechado */}
+        <View
+          style={[
+            styles.statusBadge,
+            {
+              backgroundColor: station.isOpen ? colors.success : colors.danger,
+            },
+          ]}
+        >
+          <Text style={styles.statusText}>
+            {station.isOpen ? "Aberto" : "Fechado"}
+          </Text>
+        </View>
+      </View>
+
+      {/* Localização */}
+      <Text style={styles.address}>{station.address}</Text>
+      <Text style={styles.neighborhood}>
+        {station.neighborhood}, {station.city}
+      </Text>
+
+      {/* Distância e Avaliação */}
+      <View style={styles.metaRow}>
+        <Text style={styles.distance}>
+          {station.distanceInKm.toFixed(1)} km
         </Text>
+        <View style={styles.ratingContainer}>
+          <Text style={styles.ratingText}>★ {station.rating}</Text>
+          <Text style={styles.reviewCount}>({station.reviewsCount})</Text>
+        </View>
       </View>
 
-      {/* Rating */}
-      <View style={styles.ratingRow}>
-        <Text style={styles.rating}>{station.rating.toFixed(1)}</Text>
-        <Text style={styles.ratingIcon}>★</Text>
-        <Text style={styles.reviews}>({station.reviewsCount} avaliações)</Text>
-        <Text style={styles.distance}>• {station.distanceInKm} km</Text>
-      </View>
+      {/* Serviços */}
+      {visibleServices.length > 0 && (
+        <View style={styles.servicesContainer}>
+          {visibleServices.map((service) => (
+            <ServiceTag key={service} service={service} />
+          ))}
+        </View>
+      )}
 
-      {/* Services */}
-      <View style={styles.servicesRow}>
-        {station.services.slice(0, 4).map((service) => (
-          <ServiceTag key={service} service={service} />
-        ))}
-        {station.services.length > 4 && (
-          <View style={[styles.tag, styles.moreTags]}>
-            <Text style={styles.moreTagsText}>
-              +{station.services.length - 4}
-            </Text>
-          </View>
-        )}
-      </View>
-
-      {/* Fuel Prices */}
-      <View style={styles.pricesRow}>
-        {mainFuelTypes.map((type) => {
-          const price = station.fuelPrices.find((p) => p.type === type);
-          if (!price) return null;
-          return (
-            <View key={type} style={styles.priceCard}>
-              <Text style={styles.priceType}>
-                {type === "gasolina_comum" ? "G.C." : "Etanol"}
-              </Text>
-              <Text style={styles.priceValue}>
-                {formatCurrency(price.price)}
-              </Text>
-            </View>
-          );
+      {/* Preços de Combustível (Gasolina Comum e Etanol) */}
+      <View style={styles.pricesContainer}>
+        {station.fuelPrices.map((price) => {
+          if (price.type === "gasolina_comum" || price.type === "etanol") {
+            return <FuelPriceBadge key={price.type} fuelPrice={price} />;
+          }
+          return null;
         })}
       </View>
 
-      {/* View Prices Button */}
-      <View style={styles.fullPricesRow}>
-        <FuelPriceBadge
-          fuelPrice={{
-            type: station.fuelPrices[0].type,
-            price: station.fuelPrices[0].price,
-            lastUpdated: station.fuelPrices[0].lastUpdated,
-          }}
-        />
+      {/* Indicador de Tocar para Ver */}
+      <View style={styles.ctaContainer}>
+        <Text style={styles.ctaText}>Toque para ver detalhes</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: colors.surface,
-    borderRadius: 16,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
     padding: 16,
-    borderWidth: 1,
-    borderColor: colors.border,
+    marginBottom: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
-    shadowRadius: 8,
+    shadowRadius: 4,
     elevation: 3,
-  },
-  header: {
-    marginBottom: 12,
-  },
-  nameRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  brand: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: colors.primary,
-    textTransform: "uppercase",
-  },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
-  },
-  statusText: {
-    fontSize: 11,
-    fontWeight: "600",
-  },
-  name: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: colors.text,
-    marginTop: 4,
-  },
-  address: {
-    fontSize: 13,
-    color: colors.mutedText,
-    marginTop: 2,
-  },
-  ratingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  rating: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: colors.text,
-  },
-  ratingIcon: {
-    fontSize: 12,
-    color: colors.warning,
-    marginHorizontal: 4,
-  },
-  reviews: {
-    fontSize: 12,
-    color: colors.mutedText,
-    marginRight: 8,
-  },
-  distance: {
-    fontSize: 12,
-    color: colors.primary,
-    fontWeight: "500",
-  },
-  servicesRow: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    marginBottom: 12,
-  },
-  tag: {
-    backgroundColor: colors.background,
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
     borderWidth: 1,
     borderColor: colors.border,
-    marginRight: 6,
-    marginBottom: 6,
   },
-  moreTags: {
-    justifyContent: "center",
-  },
-  moreTagsText: {
-    fontSize: 10,
-    color: colors.primary,
-    fontWeight: "600",
-  },
-  pricesRow: {
+  header: {
     flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 8,
   },
-  priceCard: {
-    backgroundColor: colors.background,
-    borderRadius: 12,
-    padding: 12,
+  brandContainer: {
     flex: 1,
     marginRight: 8,
   },
-  priceCardLast: {
-    marginRight: 0,
+  brand: {
+    fontSize: 12,
+    fontWeight: "600",
+    textTransform: "uppercase",
+    color: colors.primary,
+    marginBottom: 2,
   },
-  priceType: {
-    fontSize: 11,
-    color: colors.mutedText,
-    fontWeight: "500",
-    marginBottom: 4,
-  },
-  priceValue: {
-    fontSize: 20,
+  name: {
+    fontSize: 18,
     fontWeight: "bold",
+    color: colors.text,
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    minWidth: 60,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  statusText: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "#FFFFFF",
+  },
+  address: {
+    fontSize: 14,
+    color: colors.secondary,
+    marginBottom: 2,
+    marginTop: 8,
+  },
+  neighborhood: {
+    fontSize: 13,
+    color: colors.secondary,
+  },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 10,
+    marginBottom: 10,
+    paddingBottom: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  distance: {
+    fontSize: 14,
+    fontWeight: "500",
     color: colors.primary,
   },
-  fullPricesRow: {
+  ratingContainer: {
     flexDirection: "row",
-    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  ratingText: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "#FFB800", // Cor de estrela genérica se não houver constant
+    marginRight: 4,
+  },
+  reviewCount: {
+    fontSize: 13,
+    color: colors.secondary,
+  },
+  servicesContainer: {
+    flexDirection: "row",
     flexWrap: "wrap",
+    gap: 6,
+    marginBottom: 10,
+  },
+  pricesContainer: {
+    flexDirection: "row",
+    gap: 8,
+    marginBottom: 8,
+  },
+  ctaContainer: {
+    alignItems: "center",
+    marginTop: 4,
+    paddingBottom: 2,
+  },
+  ctaText: {
+    fontSize: 12,
+    color: colors.primary,
+    fontWeight: "500",
   },
 });
+
+export default StationCard;
