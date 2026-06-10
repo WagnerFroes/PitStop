@@ -1,13 +1,13 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { colors } from "../../../src/constants/colors";
 import { FuelPrice } from "../../../src/types/station";
@@ -17,7 +17,7 @@ const UpdatePriceScreen = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
 
-  // Dados mock do posto
+  // dados mock do posto
   const station = {
     id: id,
     name: "Posto-exemplo",
@@ -38,6 +38,14 @@ const UpdatePriceScreen = () => {
 
   const [selectedFuel, setSelectedFuel] = useState<FuelPrice | null>(null);
   const [newPrice, setNewPrice] = useState("");
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  const fuelTypeLabels: Record<string, string> = {
+    gasolina_comum: "Gasolina Comum",
+    gasolina_aditivada: "Gasolina Aditivada",
+    etanol: "Etanol",
+    diesel_s10: "Diesel S10",
+  };
 
   const handleConfirm = () => {
     if (!selectedFuel) {
@@ -49,92 +57,145 @@ const UpdatePriceScreen = () => {
       return;
     }
 
-    Alert.alert(
-      "Sucesso!",
-      "Preço atualizado com sucesso!\nVocê ganhou +15 XP",
-    );
-
-    router.back();
+    setShowSuccess(true);
   };
 
-  const fuelTypeLabels: Record<string, string> = {
-    gasolina_comum: "Gasolina Comum",
-    gasolina_aditivada: "Gasolina Aditivada",
-    etanol: "Etanol",
-    diesel_s10: "Diesel S10",
+  const handleUpdateAnother = () => {
+    setNewPrice("");
+    setShowSuccess(false);
+    setSelectedFuel(null);
+  };
+
+  const handleBackToDetails = () => {
+    router.back();
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-      {/* Cabeçalho */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.backButton}
-        >
-          <Text style={styles.backButtonText}>← Voltar</Text>
-        </TouchableOpacity>
-        <Text style={styles.title}>Atualizar preço</Text>
-      </View>
+      {showSuccess ? (
+        /* Area de sucesso */
+        <View style={styles.successContainer}>
+          <Text style={styles.successIcon}>✓</Text>
+          <Text style={styles.successTitle}>Preço atualizado com sucesso!</Text>
+          <Text style={styles.successXP}>+15 XP ganhos</Text>
 
-      {/* Info do posto */}
-      <View style={styles.stationInfo}>
-        <Text style={styles.stationBrand}>{station.brand}</Text>
-        <Text style={styles.stationName}>{station.name}</Text>
-        <Text style={styles.stationAddress}>{station.id}</Text>
-      </View>
+          <View style={styles.successDetails}>
+            <View style={styles.successDetailRow}>
+              <Text style={styles.successDetailLabel}>Posto:</Text>
+              <Text style={styles.successDetailValue}>{station.name}</Text>
+            </View>
+            <View style={styles.successDetailRow}>
+              <Text style={styles.successDetailLabel}>Combustível:</Text>
+              <Text style={styles.successDetailValue}>
+                {fuelTypeLabels[selectedFuel?.type || ""]}
+              </Text>
+            </View>
+            <View style={styles.successDetailRow}>
+              <Text style={styles.successDetailLabel}>Valor informado:</Text>
+              <Text style={styles.successDetailValue}>
+                {formatCurrency(Number(newPrice))}
+              </Text>
+            </View>
+          </View>
 
-      {/* Seleção de combustível */}
-      <Text style={styles.sectionLabel}>Selecione o combustível</Text>
-      <View style={styles.fuelList}>
-        {station.fuelPrices.map((fuel) => (
           <TouchableOpacity
-            key={fuel.type}
-            style={[
-              styles.fuelOption,
-              selectedFuel?.type === fuel.type && styles.fuelOptionSelected,
-            ]}
-            onPress={() => setSelectedFuel(fuel)}
+            style={styles.updateAnotherButton}
+            onPress={handleUpdateAnother}
           >
-            <Text
-              style={[
-                styles.fuelOptionLabel,
-                selectedFuel?.type === fuel.type &&
-                  styles.fuelOptionLabelSelected,
-              ]}
-            >
-              {fuelTypeLabels[fuel.type] || fuel.type}
-            </Text>
-            <Text
-              style={[
-                styles.fuelOptionPrice,
-                selectedFuel?.type === fuel.type &&
-                  styles.fuelOptionLabelSelected,
-              ]}
-            >
-              {formatCurrency(fuel.price)}
+            <Text style={styles.updateAnotherButtonText}>
+              Atualizar outro combustível
             </Text>
           </TouchableOpacity>
-        ))}
-      </View>
 
-      {/* Campo de novo preço */}
-      <Text style={styles.sectionLabel}>Novo valor</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Ex: 5.49"
-        keyboardType="decimal-pad"
-        value={newPrice}
-        onChangeText={setNewPrice}
-        placeholderTextColor={colors.mutedText}
-      />
+          <TouchableOpacity
+            style={styles.backToDetailsButton}
+            onPress={handleBackToDetails}
+          >
+            <Text style={styles.backToDetailsButtonText}>
+              Voltar para detalhes do posto
+            </Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        /* Formulário de atualização */
+        <>
+          {/* Cabeçalho */}
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={styles.backButton}
+            >
+              <Text style={styles.backButtonText}>← Voltar</Text>
+            </TouchableOpacity>
+            <Text style={styles.title}>Atualizar preço</Text>
+          </View>
 
-      {/* Botão confirmar */}
-      <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
-        <Text style={styles.confirmButtonText}>Confirmar atualização</Text>
-      </TouchableOpacity>
+          {/* Info do posto */}
+          <View style={styles.stationInfo}>
+            <Text style={styles.stationBrand}>{station.brand}</Text>
+            <Text style={styles.stationName}>{station.name}</Text>
+            <Text style={styles.stationAddress}>{station.id}</Text>
+          </View>
 
-      <View style={{ height: 30 }} />
+          {/* Seleção de combustível */}
+          <Text style={styles.sectionLabel}>Selecione o combustível</Text>
+          <View style={styles.fuelList}>
+            {station.fuelPrices.map((fuel) => (
+              <TouchableOpacity
+                key={fuel.type}
+                style={[
+                  styles.fuelOption,
+                  selectedFuel?.type === fuel.type && styles.fuelOptionSelected,
+                ]}
+                onPress={() => setSelectedFuel(fuel)}
+              >
+                <Text
+                  style={[
+                    styles.fuelOptionLabel,
+                    selectedFuel?.type === fuel.type &&
+                      styles.fuelOptionLabelSelected,
+                  ]}
+                >
+                  {fuelTypeLabels[fuel.type] || fuel.type}
+                </Text>
+                <Text
+                  style={[
+                    styles.fuelOptionPrice,
+                    selectedFuel?.type === fuel.type &&
+                      styles.fuelOptionLabelSelected,
+                  ]}
+                >
+                  {formatCurrency(fuel.price)}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* Campo de novo preço */}
+          <Text style={styles.sectionLabel}>Novo valor</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Ex: 5.49"
+            keyboardType="decimal-pad"
+            value={newPrice}
+            onChangeText={setNewPrice}
+            placeholderTextColor={colors.mutedText}
+          />
+
+          {/* Botão confirmar */}
+          <TouchableOpacity
+            style={[
+              styles.confirmButton,
+              !selectedFuel && styles.confirmButtonDisabled,
+            ]}
+            onPress={handleConfirm}
+          >
+            <Text style={styles.confirmButtonText}>Confirmar atualização</Text>
+          </TouchableOpacity>
+
+          <View style={{ height: 30 }} />
+        </>
+      )}
     </ScrollView>
   );
 };
@@ -254,6 +315,88 @@ const styles = StyleSheet.create({
   confirmButtonText: {
     color: "#FFFFFF",
     fontSize: 16,
+    fontWeight: "bold",
+  },
+  confirmButtonDisabled: {
+    backgroundColor: colors.mutedText,
+    opacity: 0.5,
+  },
+  successContainer: {
+    alignItems: "center",
+    paddingVertical: 32,
+  },
+  successIcon: {
+    fontSize: 64,
+    fontWeight: "bold",
+    color: "#22c55e",
+    marginBottom: 16,
+  },
+  successTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: colors.text,
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  successXP: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: colors.primary,
+    marginBottom: 24,
+  },
+  successDetails: {
+    backgroundColor: colors.surface,
+    borderRadius: 12,
+    padding: 16,
+    width: "100%",
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: 20,
+  },
+  successDetailRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 8,
+  },
+  successDetailLabel: {
+    fontSize: 14,
+    color: colors.mutedText,
+    fontWeight: "500",
+  },
+  successDetailValue: {
+    fontSize: 14,
+    color: colors.text,
+    fontWeight: "600",
+  },
+  updateAnotherButton: {
+    backgroundColor: colors.surface,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    marginBottom: 12,
+  },
+  updateAnotherButtonText: {
+    fontSize: 15,
+    color: colors.primary,
+    fontWeight: "600",
+  },
+  backToDetailsButton: {
+    backgroundColor: colors.primary,
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 5,
+    width: "100%",
+  },
+  backToDetailsButtonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
     fontWeight: "bold",
   },
 });
